@@ -1,0 +1,57 @@
+// Josh Cho, Morgan Bryant, 11/18/16
+// Psych 204: Computation and Cognition, the Probabilistic Approach
+// 
+// In this webppl script, we model the  
+
+var n1=10; var n2=10;
+var data = {trial1:[0,10], trial2:[5,5], trial3:[3,7], trial4:[0,5], trial0:[2,4],
+            trial5:[1,10], trial6:[1,9], trial7:[2,8], trial8:[2,2], trial9:[1,4]}
+var trialNames = ["trial1", "trial2", "trial3", "trial4", "trial5", 
+                 "trial6", "trial7", "trial8" ,"trial9", 'trial0']
+
+var marginalize = function(dist, key){
+  return Infer({method: "enumerate"}, function(){
+    return sample(dist)[key]
+  })
+}
+
+var runExperiment = function(opts, trial, i, j) {
+  return Infer(opts, function () {
+    var p = [uniform(0,1), uniform(0,1), uniform(0,1)]
+    observe(Binomial({p: p[i], n: n1}), data[trial][0]);
+    observe(Binomial({p: p[j], n: n2}), data[trial][1]);
+    var pred1 = binomial(p[i], n1)
+    var pred2 = binomial(p[j], n2)
+    return {p1:p[i], p2:p[j], pred1:pred1, pred2:pred2}
+  })
+}
+
+var getExperiment = function(h, trial) {
+  var opts_inner = {method:'MCMC', samples:20000, burn:10000}    
+  if (h=="H0") {
+    return runExperiment(opts_inner, trial, 0, 0);
+  } else if (h=="HA") {
+    return runExperiment(opts_inner, trial, 1, 2);
+  }
+}
+
+var study = function(trial) {
+  return Infer({method:'enumerate'}, function() {
+    var hypothesis = flip() ? 'H0' : 'HA';
+    var experiment = getExperiment(hypothesis, trial);
+    var m_pred1 = marginalize(experiment, 'pred1')
+    var m_pred2 = marginalize(experiment, 'pred2')
+    observe(m_pred1,data[trial][0])
+    observe(m_pred2,data[trial][1])
+    return hypothesis;
+  })
+}
+
+var visualizeStudy = function(trial) {
+  print("H0 vs HA probabilities based on data=["+data[trial]+']:')
+  var s = study(trial)
+  viz.auto(s, {'ylabel':trial, })
+  return s;
+}
+
+map(function(t) {visualizeStudy(t)}, trialNames)
