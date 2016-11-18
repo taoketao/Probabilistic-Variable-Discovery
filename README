@@ -1,16 +1,3 @@
 https://github.com/taoketao/Probabilistic-Variable-Discovery.git
 This is a class project for Stanford's Psych 204 (Probabilistic Cognition and Computation).  We use approximate inference methods in the probabilistic programming language, WebPPL, to model models themselves.  Using probability and data analysis techniques, we intend to improve existing models of various processes by examining each's fitness to the observed data. 
 
-(1)
-baseline-completed[.txt]:  This WebPPL program examines two hypotheses on a given task inspired by "Posterior prediction and model checking" on <https://probmods.org/v2/chapters/14-bayesian-data-analysis.html>:
-
-    Imagine you’re a developmental psychologist, piloting a two-alternative forced choice task on young children. (Just for fun, let’s pretend it’s a helping study, where the child either chooses to help or not help a confederate in need.) You have two research assistants that you send to two different preschools to collect data. You got your first batch of data back today: For one of your research assistants, 10 out of 10 children tested helped the confederate in need. For the other research assitant, 0 out of 10 children tested helped.
-
-In this scenario, we first consider the original hypothesis H0 as P(child helps) depends only on the child, for which the optimal inference is 0.5 for a single parameter.  Next, we instead consider the (sole) alternative hypothesis HA where P(child helps) depends on both the child and the specific experiment, where the optimal inferred parameters are just above 0 and just below 1 for two different, independently-chosen parameters.  
-
-Each hypothesized model is identified with optimal parameters for the given data using a standard Infer, run using Markov Chain Monte Carlo, over 30000 samples.
-
-baseline-completed.txt implements such a model, and we have attached it at the end for examination.  
-
-Results:
-Over the single data point (10:10, 0:10), we see that the alternative hypothesis HA with two free parameters is much more able to explain the 
