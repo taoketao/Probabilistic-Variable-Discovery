@@ -1,0 +1,61 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1504\cocoasubrtf600
+{\fonttbl\f0\fmodern\fcharset0 CourierNewPSMT;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;\csgray\c100000;}
+\margl1440\margr1440\vieww24000\viewh11760\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs22 \cf0 JOSH:  The first section is just scratchpad work going through some examples, for figuring out the algorithm.\
+The second section is a complete pseudocode algorithm.  I\'92m 95% sure it\'92s what we want.  The crux is maintaining\
+a maximum value for each hypothesis in order to filter away higher level classes, and the recursive aspect\
+maintains the prospect of (0010) and (0100) both being discovered as unique classes in which order matters.\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+  // for 1: 0\
+  // for 2: 00,01\
+  // for 3: 000=111,001,010,011=100,012=201\
+  // for 4: 0000,0001,0010,0100,0011,0101,0110,0111,0012,\
+  //          0102,0120,0112,0121,0211,0123\
+  // recursive algorithm?\
+  // - for level i,  if i==0, l=[0].\
+  // otherwise, for each of the options at level i-1, make copies of equality\
+  // using all i options (ie, the last digit is the only possible slot that can\
+  // take value i), subjected to a maximum minimum difference of 1 between any (ie,\
+  // the last) digit.\
+  // eg. make level 3 from 2:\
+  // 00=a -> a0, a1, a2<-thrown out, and 01=b -> b0, b1, b2.\
+  // level 4:  a=000,b=001,c=010,d=011,e=012\
+  // make a0,a1, b0,b1,b2, c0,c1,c2, d0,d1,d2, e0,e1,e2,e3\
+  // level 5:\
+  // a00,a01,a10,a11,a12, b00,b01,b02, ... \
+\
+ie, need to make pairs of (hypothesis eq class, maximum value in previous\
+\'85\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+\
+Algorithm, recursive and takes parameter N:\
+-Base: n=1.  Initialize [([0],0)]=S. (set S.)\
+-Recurse: \
+ If n=N, return S.\
+ Else, or each pair s=(eq (type=list of ints), mx (type=int)) in S, make set T and for each pair in S:\
+   0) pair p0 := ( list made by ints \{eq[0],eq[1],\'85,eq[n],0\}, max(0,mx) ) only if 0 <= mx+1 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0    1) pair p1 := ( list made by ints \{eq[0],eq[1],\'85,eq[n],1\}, max(1,mx) ) only if 1 <= mx+1 \
+   \'85 \
+   n) pair pn := ( list made by ints \{eq[0],eq[1],\'85,eq[n],n\}, max(n,mx) ) only if n <= mx+1 \
+   Add each of the pairs, of which there are between 1 and n, to T, and recurse on parameters T, n+1, N.\
+\
+On return, each pair p in S is a unique p of form (unique equivalence class, maximum value in the class),\
+where the unique equivalence classes each are of the same length, the first int is zero, the last digit is \
+the only one that might take on value N (and only in the case [0,1,\'85,N]), and no element is more than 1 away\
+from some other element in the sequence (eg, [002] would not appear).\
+The maximum value can be ignored, unless knowing the number of uniform distributions to sample from is \
+a useful thing to know.\
+\
+So, the size of set S grows by at least 1, and at most by size n.\
+The conditional is also necessary, to avoid the following equivalent pairs: (001) and (002) when N=3.}
